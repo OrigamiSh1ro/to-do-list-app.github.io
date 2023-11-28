@@ -3,7 +3,7 @@ window.addEventListener('load', () => {
 	const form = document.querySelector("#task-form");
 	const input = document.querySelector("#task-input");
 	const list_el = document.querySelector("#tasks");
-	const tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+	const tasks = 
 
 	form.addEventListener('submit', (e) => {
 		e.preventDefault();
@@ -54,7 +54,7 @@ window.addEventListener('load', () => {
 				task_edit_el.innerText = "Save";
 				task_input_el.removeAttribute("readonly");
 				task_input_el.focus();
-				localStorage.setItem("tasks", JSON.stringify(tasks));
+				
 			} else {
 				task_edit_el.innerText = "Edit";
 				task_input_el.setAttribute("readonly", "readonly");
@@ -66,13 +66,7 @@ window.addEventListener('load', () => {
 			list_el.removeChild(task_el);
 			const index = tasks.indexOf(task);
        		 tasks.splice(index, 1);
-        	localStorage.setItem("tasks", JSON.stringify(tasks));
-		});
-	});
-});
+        	
 
 
 
-const itemsArray =localStorage.getItem('text')?JSON.parse(localStorage.getItem('text')) :[];
-window.localStorage.setItem(key, value);
-window.localStorage.removeItem(task_el);
