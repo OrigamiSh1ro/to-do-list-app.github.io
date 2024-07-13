@@ -1,73 +1,72 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const todoForm = document.getElementById('todo-form');
+    const todoInput = document.getElementById('todo-input');
+    const todoList = document.getElementById('todo-list');
+    const progressBar = document.getElementById('progress-bar');
+    let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
+    const renderTodos = () => {
+        todoList.innerHTML = '';
+        todos.forEach((todo, index) => {
+            const li = document.createElement('li');
+            li.innerHTML = `
+                <span>${todo.text}</span>
+                <div>
+                    <input type="checkbox" ${todo.completed ? 'checked' : ''} onclick="toggleComplete(${index})">
+                    <button onclick="removeItem(${index})">✗</button>
+                </div>
+            `;
+            todoList.appendChild(li);
+        });
+        updateProgressBar();
+    };
 
-window.addEventListener('load', () => {
-	const form = document.querySelector("#task-form");
-	const input = document.querySelector("#task-input");
-	const list_el = document.querySelector("#tasks");
-	const tasks = 
+    const addTodo = (text) => {
+        todos.push({ text, completed: false });
+        localStorage.setItem('todos', JSON.stringify(todos));
+        renderTodos();
+    };
 
-	form.addEventListener('submit', (e) => {
-		e.preventDefault();
+    const removeItem = (index) => {
+        todos.splice(index, 1);
+        localStorage.setItem('todos', JSON.stringify(todos));
+        renderTodos();
+    };
 
-		const task = input.value;
+    const toggleComplete = (index) => {
+        todos[index].completed = !todos[index].completed;
+        localStorage.setItem('todos', JSON.stringify(todos));
+        renderTodos();
+    };
 
-		const task_el = document.createElement('div');
-		task_el.classList.add('task');
+    const updateProgressBar = () => {
+        const total = todos.length;
+        const completed = todos.filter(todo => todo.completed).length;
+        const percentage = total === 0 ? 0 : (completed / total) * 100;
+        
+        progressBar.style.width = `${percentage}%`;
 
-		const task_content_el = document.createElement('div');
-		task_content_el.classList.add('content');
+        if (percentage === 100) {
+            progressBar.style.background = 'green';
+        } else if (percentage >= 50) {
+            progressBar.style.background = 'yellow';
+        } else {
+            progressBar.style.background = 'red';
+        }
+    };
 
-		task_el.appendChild(task_content_el);
+    todoForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const text = todoInput.value.trim();
+        if (text) {
+            addTodo(text);
+            todoInput.value = '';
+        }
+    });
 
-		const task_input_el = document.createElement('input');
-		task_input_el.classList.add('text');
-		task_input_el.type = 'text';
-		task_input_el.value = task;
-		task_input_el.setAttribute('readonly', 'readonly');
+    renderTodos();
 
-		task_content_el.appendChild(task_input_el);
-
-		const task_actions_el = document.createElement('div');
-		task_actions_el.classList.add('actions');
-		
-		const task_edit_el = document.createElement('button');
-		task_edit_el.classList.add('edit');
-		task_edit_el.innerText = 'Edit';
-
-		const task_delete_el = document.createElement('button');
-		task_delete_el.classList.add('delete');
-		task_delete_el.innerText = 'Delete';
-	
-
-		task_actions_el.appendChild(task_edit_el);
-		task_actions_el.appendChild(task_delete_el);
-
-		task_el.appendChild(task_actions_el);
-
-		list_el.appendChild(task_el);
-
-		input.value = '';
-
-	
-
-		task_edit_el.addEventListener('click', (e) => {
-			if (task_edit_el.innerText.toLowerCase() == "edit") {
-				task_edit_el.innerText = "Save";
-				task_input_el.removeAttribute("readonly");
-				task_input_el.focus();
-				
-			} else {
-				task_edit_el.innerText = "Edit";
-				task_input_el.setAttribute("readonly", "readonly");
-			}
-		});
-
-		
-		task_delete_el.addEventListener('click', (e) => {
-			list_el.removeChild(task_el);
-			const index = tasks.indexOf(task);
-       		 tasks.splice(index, 1);
-        	
-
-
-
+    // Expose functions to global scope
+    window.removeItem = removeItem;
+    window.toggleComplete = toggleComplete;
+});
